@@ -101,6 +101,7 @@ if (window.location.hostname.indexOf("ball51.com") !== -1) {
     "https://ball6.vip",
 ];
 }
+console.log(window.location.hostname);
 console.log(jsonLink);
 var jsonData = {
     "success": true,
