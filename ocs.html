@@ -5,19 +5,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Online Customer Service</title>
     <style>
-        body { margin: 0; padding: 0; background-color: #ffffff; }
-        iframe { border: none; width: 100%; height: 100vh; }
-        .woot-widget-bubble { display: none !important; } /* 隱藏原本的小氣泡 */
+        body { margin: 0; padding: 0; background-color: #f7f8fa; }
+        
+        .woot-widget-bubble { display: none !important; }
+
+        /* PC 畫面置中設定 */
         .woot-widget-holder { 
-            top: 0 !important; 
-            right: 0 !important; 
-            bottom: 0 !important; 
-            left: 0 !important; 
-            width: 100% !important; 
-            height: 100% !important; 
-            max-height: 100vh !important;
-            box-shadow: none !important;
-            border-radius: 0 !important;
+            top: 50% !important; 
+            left: 50% !important; 
+            transform: translate(-50%, -50%) !important; 
+            width: 450px !important; 
+            height: 90vh !important; 
+            max-height: 800px !important; 
+            box-shadow: 0 10px 50px rgba(0,0,0,0.1) !important; 
+            border-radius: 12px !important; 
+            overflow: hidden !important;
+            right: auto !important;
+            bottom: auto !important;
+        }
+
+        /* 隱藏原本的關閉按鈕圖示，並用偽元素寫一個「返回」文字 */
+        /* 注意：這部分會根據 Chatwoot 版本不同，CSS Class 可能略有差異 */
+        .woot-elements--close-button {
+            background-image: none !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: auto !important;
+            padding: 0 15px !important;
+            text-decoration: none !important;
+        }
+
+        .woot-elements--close-button::before {
+            content: "〈 返回" !important; /* 自定義文字 */
+            color: #fff !important; /* 根據你的主題顏色調整 */
+            font-size: 14px !important;
+            font-weight: bold !important;
+        }
+
+        @media only screen and (max-width: 600px) {
+            .woot-widget-holder {
+                top: 0 !important;
+                left: 0 !important;
+                transform: none !important;
+                width: 100% !important;
+                height: 100% !important;
+                max-height: 100vh !important;
+                border-radius: 0 !important;
+            }
         }
     </style>
 </head>
@@ -35,9 +70,23 @@
             baseUrl: BASE_URL,
             type: 'expanded_bubble' 
           })
-          // 關鍵：載入後立即強制開啟，並隱藏切換按鈕
+
+          // 監聽 Chatwoot 準備就緒
           window.addEventListener('chatwoot:ready', function () {
+            // 1. 自動開啟
             window.$chatwoot.toggle('open');
+
+            // 2. 監聽 Widget 關閉事件
+            // 當使用者點擊那個（我們改成返回的）按鈕時，執行返回上一頁
+            window.addEventListener('chatwoot:on-is-widget-closing', function () {
+                // 如果有上一頁就回上一頁，沒有就關閉視窗（視情況調整）
+                if (document.referrer !== "") {
+                    window.history.back();
+                } else {
+                    // 若無紀錄則嘗試關閉分頁
+                    window.close();
+                }
+            });
           });
         }
       })(document,"script");
