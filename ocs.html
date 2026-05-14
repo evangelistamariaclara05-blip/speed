@@ -59,37 +59,45 @@
 <body>
     <script>
       (function(d,t) {
-        var BASE_URL="https://xiongguide.com";
-        var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
-        g.src=BASE_URL+"/packs/js/sdk.js";
-        g.async = true;
-        s.parentNode.insertBefore(g,s);
-        g.onload=function(){
-          window.chatwootSDK.run({
-            websiteToken: 'X8wKz4jL2ha5ae3sU3BcRaLu',
-            baseUrl: BASE_URL,
-            type: 'expanded_bubble' 
-          })
-
-          // 監聽 Chatwoot 準備就緒
-          window.addEventListener('chatwoot:ready', function () {
-            // 1. 自動開啟
-            window.$chatwoot.toggle('open');
-
-            // 2. 監聽 Widget 關閉事件
-            // 當使用者點擊那個（我們改成返回的）按鈕時，執行返回上一頁
-            window.addEventListener('chatwoot:on-is-widget-closing', function () {
-                // 如果有上一頁就回上一頁，沒有就關閉視窗（視情況調整）
-                if (document.referrer !== "") {
-                    window.history.back();
-                } else {
-                    // 若無紀錄則嘗試關閉分頁
-                    window.close();
-                }
+          var BASE_URL="https://xiongguide.com";
+          var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+          g.src=BASE_URL+"/packs/js/sdk.js";
+          g.async = true;
+          s.parentNode.insertBefore(g,s);
+          g.onload=function(){
+            window.chatwootSDK.run({
+              websiteToken: 'X8wKz4jL2ha5ae3sU3BcRaLu',
+              baseUrl: BASE_URL,
+              type: 'expanded_bubble' 
             });
-          });
-        }
-      })(document,"script");
+        
+            window.addEventListener('chatwoot:ready', function () {
+              window.$chatwoot.toggle('open');
+        
+              // 使用事件委派 (Event Delegation)
+              // 這樣即便按鈕是後來才長出來的，點擊 body 也能抓到它
+              document.addEventListener('click', function (e) {
+                // 尋找點擊目標是否為 .close-button 或其內部的 SVG/Path
+                var closeBtn = e.target.closest('.close-button');
+                
+                if (closeBtn) {
+                  console.log("成功攔截到關閉按鈕點擊！");
+                  
+                  // 阻止 Chatwoot 原本的關閉邏輯
+                  e.preventDefault();
+                  e.stopPropagation();
+        
+                  // 執行返回或導向首頁
+                  if (document.referrer !== "" && document.referrer.includes(window.location.hostname)) {
+                    window.history.back();
+                  } else {
+                    window.location.href = "https://xiongguide.com";
+                  }
+                }
+              }, true); // 使用 Capture 模式優先攔截
+            });
+          }
+        })(document,"script");
     </script>
 </body>
 </html>
