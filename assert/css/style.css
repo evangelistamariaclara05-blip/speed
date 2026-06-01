@@ -718,3 +718,25 @@ body {
         margin-left: 3px;
     }
 }
+
+.style-speed {
+  font-family: 'Impact', 'Arial Black', sans-serif;
+  
+  /* RWD 響應式字體大小 */
+  font-size: clamp(20px, 3.5vw, 40px);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  
+  /* 完美的傾斜角度，呼應 LOGO 速度感 */
+  transform: skewX(-10deg);
+  display: inline-block;
+  
+  /* 精準還原原本文字的亮綠到深綠漸層 */
+  background: linear-gradient(to bottom, #1d6209 0%, #011502 100%);
+  
+  /* 將漸層套用到文字上 */
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
+}
